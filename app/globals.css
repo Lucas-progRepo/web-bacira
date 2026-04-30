@@ -7,8 +7,9 @@ html {
 }
 
 body {
-  font-feature-settings: 'kern';
-  -webkit-font-smoothing: antialiased;
+  background-color: #F5F1EA;
+  color: #1F2A24;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 ::selection {
