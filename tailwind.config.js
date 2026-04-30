@@ -9,6 +9,7 @@ module.exports = {
         primary: '#1F2A24',
         secondary: '#C9A36A',
         accent: '#8B2E2E',
+        cream: '#F5F0E8',
       },
       fontFamily: {
         serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],

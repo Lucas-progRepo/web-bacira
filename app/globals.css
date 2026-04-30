@@ -7,7 +7,8 @@ html {
 }
 
 body {
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-feature-settings: 'kern';
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
