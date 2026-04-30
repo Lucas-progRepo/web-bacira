@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Bacira | Restaurante de cocina de autor en Madrid',
-  description: 'Bacira, restaurante en Chamberí (Madrid) con cocina de fusión y producto de temporada. Descubre nuestra carta y reserva mesa online.',
+  description: 'Bacira, restaurante en Chamberí (Madrid) con cocina de fusión y producto de temporada. Descubre nuestra carta, reserva mesa y vive una experiencia gastronómica única.',
   keywords: ['restaurante Bacira', 'restaurante Madrid', 'restaurante Chamberí', 'cocina de autor Madrid', 'reservar mesa Madrid', 'restaurante fusión Madrid'],
   openGraph: {
     title: 'Bacira | Restaurante de cocina de autor en Madrid',
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es">
-      <body className="bg-cream text-primary antialiased">{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
