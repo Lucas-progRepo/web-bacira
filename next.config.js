@@ -5,6 +5,5 @@ const nextConfig = {
       { protocol: 'https', hostname: '**.supabase.co' }
     ]
   }
-}
-
-module.exports = nextConfig
+};
+module.exports = nextConfig;
