@@ -1,10 +1,10 @@
 'use client'
 import { m } from 'motion/react'
+import type { ReactNode } from 'react'
 
-export function Reveal({ children, delay = 0, y = 16, className }: { children: React.ReactNode; delay?: number; y?: number; className?: string }) {
+export function Reveal({ children, delay = 0, y = 16 }: { children: ReactNode; delay?: number; y?: number }) {
   return (
     <m.div
-      className={className}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.2, margin: '0px 0px -8% 0px' }}
