@@ -18,11 +18,8 @@ module.exports = {
       },
       letterSpacing: {
         eyebrow: '0.18em'
-      },
-      transitionTimingFunction: {
-        'out-emil': 'cubic-bezier(0.23,1,0.32,1)'
       }
     }
   },
   plugins: []
-};
+}
