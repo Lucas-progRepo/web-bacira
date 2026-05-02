@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './app/**/*.{ts,tsx}'
-  ],
+  content: ['./app/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -16,13 +14,13 @@ module.exports = {
       },
       fontFamily: {
         display: ['var(--font-display)', 'serif'],
-        sans: ['var(--font-body)', 'system-ui', 'sans-serif']
+        body: ['var(--font-body)', 'sans-serif']
       },
       letterSpacing: {
         eyebrow: '0.18em'
       },
       transitionTimingFunction: {
-        'out-strong': 'cubic-bezier(0.23, 1, 0.32, 1)'
+        'out-emil': 'cubic-bezier(0.23,1,0.32,1)'
       }
     }
   },
