@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}'
+    './app/**/*.{ts,tsx}'
   ],
   theme: {
     extend: {
@@ -15,8 +15,14 @@ module.exports = {
         line: 'rgba(28,26,22,0.12)'
       },
       fontFamily: {
-        display: ['var(--font-fraunces)', 'serif'],
-        body: ['var(--font-manrope)', 'sans-serif']
+        display: ['var(--font-display)', 'serif'],
+        sans: ['var(--font-body)', 'system-ui', 'sans-serif']
+      },
+      letterSpacing: {
+        eyebrow: '0.18em'
+      },
+      transitionTimingFunction: {
+        'out-strong': 'cubic-bezier(0.23, 1, 0.32, 1)'
       }
     }
   },
