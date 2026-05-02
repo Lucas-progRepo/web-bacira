@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./app/**/*.{ts,tsx}'],
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   theme: {
     extend: {
       colors: {
@@ -14,12 +16,12 @@ module.exports = {
       },
       fontFamily: {
         display: ['var(--font-display)', 'serif'],
-        body: ['var(--font-body)', 'sans-serif']
+        body: ['var(--font-body)', 'system-ui', 'sans-serif']
       },
       letterSpacing: {
         eyebrow: '0.18em'
       }
-    }
+    },
   },
-  plugins: []
+  plugins: [],
 }
