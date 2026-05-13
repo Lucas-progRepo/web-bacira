@@ -20,7 +20,7 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: 'Bacira | Restaurante de cocina de fusión en Chamberí, Madrid',
   description:
-    'Bacira, restaurante en Chamberí (Madrid) con cocina de fusión y producto de temporada. Una experiencia gastronómica cuidada hasta el último detalle.',
+    'Bacira, restaurante en Chamberí (Madrid) con cocina de fusión y producto de temporada. Una mesa para detenerse, brindar y volver.',
   keywords: [
     'restaurante Bacira',
     'restaurante Chamberí',
@@ -28,35 +28,40 @@ export const metadata: Metadata = {
     'cocina de autor Madrid',
     'cocina fusión Madrid',
     'dónde comer en Chamberí',
-    'mejor restaurante Chamberí'
+    'restaurante producto temporada Madrid'
   ],
   openGraph: {
-    title: 'Bacira | Cocina de fusión en Chamberí',
+    title: 'Bacira | Cocina de fusión en Chamberí, Madrid',
     description:
-      'Producto de temporada, técnica mediterránea y sabores que viajan. Una mesa para detenerse, brindar y volver.',
-    locale: 'es_ES',
-    type: 'website'
+      'Producto de temporada, técnica mediterránea y sabores que viajan. Chamberí, Madrid.',
+    type: 'website',
+    locale: 'es_ES'
   }
 };
 
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  name: 'Bacira',
+  servesCuisine: ['Fusión', 'Mediterránea'],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Chamberí',
+    addressRegion: 'Madrid',
+    addressCountry: 'ES'
+  },
+  telephone: '+34675811548',
+  priceRange: '€€'
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const ld = {
-    '@context': 'https://schema.org',
-    '@type': 'Restaurant',
-    name: 'Bacira',
-    servesCuisine: ['Fusión', 'Mediterránea contemporánea'],
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Madrid',
-      addressRegion: 'Chamberí',
-      addressCountry: 'ES'
-    },
-    telephone: '+34675811548'
-  };
   return (
     <html lang="es" className={`${fraunces.variable} ${manrope.variable} scroll-smooth`}>
       <body className="bg-bg text-ink font-body antialiased">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
         {children}
       </body>
     </html>
