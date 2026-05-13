@@ -1,268 +1,288 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-export default function Page() {
+const PHONE = '+34675811548';
+const PHONE_DISPLAY = '+34 675 81 15 48';
+const WA_URL = `https://wa.me/${PHONE.replace(/\D/g, '')}?text=${encodeURIComponent('Hola Bacira, me gustaría reservar una mesa.')}`;
+const MAPS_QUERY = encodeURIComponent('Chamberí, Madrid');
+const MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`;
+const MAPS_EMBED = `https://maps.google.com/maps?q=${MAPS_QUERY}&output=embed`;
+
+function useReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal');
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('in-view');
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { rootMargin: '-60px' }
-    );
-    els.forEach((el) => io.observe(el));
+    if (typeof window === 'undefined') return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const els = document.querySelectorAll<HTMLElement>('.reveal');
+    if (reduced) {
+      els.forEach(el => el.classList.add('in-view'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '-40px' });
+    els.forEach(el => io.observe(el));
     return () => io.disconnect();
   }, []);
+}
 
-  const heroWords = 'Cocina de fusión en el corazón de Chamberí'.split(' ');
+function HeroTitle() {
+  const words = ['Cocina', 'de', '\u00a0', 'en', 'el', 'coraz\u00f3n', 'de', 'Chamber\u00ed'];
+  return (
+    <h1 className="font-display font-medium text-ink leading-[0.95] tracking-tight" style={{ fontSize: 'clamp(2.75rem, 7vw, 5.5rem)' }}>
+      <span className="hero-word" style={{ animationDelay: '0ms' }}>Cocina </span>
+      <span className="hero-word" style={{ animationDelay: '60ms' }}>de </span>
+      <span className="hero-word italic text-accent" style={{ animationDelay: '120ms', fontFamily: 'var(--font-fraunces)' }}>fusión </span>
+      <br />
+      <span className="hero-word" style={{ animationDelay: '180ms' }}>en </span>
+      <span className="hero-word" style={{ animationDelay: '240ms' }}>el </span>
+      <span className="hero-word" style={{ animationDelay: '300ms' }}>corazón </span>
+      <span className="hero-word" style={{ animationDelay: '360ms' }}>de </span>
+      <span className="hero-word" style={{ animationDelay: '420ms' }}>Chamberí.</span>
+    </h1>
+  );
+}
+
+export default function Page() {
+  useReveal();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-bg text-ink">
       {/* NAVBAR */}
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-bg/80 border-b border-line">
-        <nav className="max-w-6xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <a href="#top" className="font-display text-xl font-600 tracking-tight">
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${scrolled ? 'bg-bg/85 backdrop-blur-md border-b border-line' : 'bg-transparent'}`}>
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+          <a href="#top" className="font-display font-semibold text-lg tracking-tight">
             Bacira<span className="text-accent">.</span>
           </a>
-          <ul className="hidden md:flex items-center gap-8 text-sm">
-            <li><a href="#manifiesto" className="nav-link">Casa<span className="bar" /></a></li>
-            <li><a href="#carta" className="nav-link">Carta<span className="bar" /></a></li>
-            <li><a href="#sobre" className="nav-link">Sobre<span className="bar" /></a></li>
-            <li><a href="#visitar" className="nav-link">Visitar<span className="bar" /></a></li>
-          </ul>
-          <a
-            href="tel:+34675811548"
-            className="btn hidden sm:inline-flex items-center gap-2 px-4 py-2 text-xs uppercase tracking-[0.18em] border border-ink rounded-full hover:bg-ink hover:text-bg"
-          >
-            Reservar
+          <div className="hidden md:flex items-center gap-8 text-sm">
+            <a href="#manifiesto" className="nav-link text-inkSoft">Manifiesto</a>
+            <a href="#carta" className="nav-link text-inkSoft">Carta</a>
+            <a href="#sobre" className="nav-link text-inkSoft">Casa</a>
+            <a href="#visitarnos" className="nav-link text-inkSoft">Visitarnos</a>
+          </div>
+          <a href={WA_URL} target="_blank" rel="noopener" className="btn btn-primary bg-accent text-bg px-5 py-2.5 text-sm rounded-full font-medium">
+            Escríbenos
           </a>
-        </nav>
-      </header>
+        </div>
+      </nav>
 
       {/* HERO */}
-      <section id="top" className="relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 pt-20 lg:pt-28 pb-24 lg:pb-32 relative">
-          <span className="section-num absolute top-6 lg:top-10 left-6 lg:left-10 text-sm">00 — Bacira</span>
+      <section id="top" className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 photo-placeholder opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-bg/70 to-bg" />
+        </div>
 
-          {/* Etiqueta circular */}
-          <div
-            className="tag-rotate hidden md:flex absolute top-12 right-6 lg:right-10 w-32 h-32 rounded-full bg-accentSoft items-center justify-center text-center"
-            style={{ transform: 'rotate(-8deg)' }}
-          >
-            <span className="font-display text-xs uppercase tracking-[0.18em] text-ink leading-tight px-3">
-              Chamberí<br />· Madrid ·
-            </span>
-          </div>
-
-          <div className="pt-16 lg:pt-20 max-w-4xl">
-            <p className="eyebrow mb-8">Restaurante · desde Madrid</p>
-            <h1 className="font-display font-500 leading-[1.02] tracking-tight text-ink" style={{ fontSize: 'clamp(2.75rem, 7vw, 5.5rem)' }}>
-              {heroWords.map((w, i) => (
-                <span key={i} className="hero-word mr-[0.25em]" style={{ animationDelay: `${i * 60}ms` }}>
-                  {w === 'fusión' ? <em className="font-display italic text-accent">{w}</em> : w}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-8 max-w-xl text-lg text-inkSoft leading-[1.7]">
-              Producto de temporada, técnica mediterránea y sabores que viajan. Una mesa para detenerse, brindar y volver.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <a href="#carta" className="btn inline-flex items-center gap-3 bg-accent text-bg px-7 py-4 rounded-full text-sm uppercase tracking-[0.18em] hover:bg-accent/90">
-                Ver carta
-                <span aria-hidden>→</span>
-              </a>
-              <a href="tel:+34675811548" className="btn inline-flex items-center gap-3 px-7 py-4 rounded-full text-sm uppercase tracking-[0.18em] border border-ink text-ink hover:bg-ink hover:text-bg">
-                Llamar
-              </a>
+        {/* Stamp */}
+        <div className="absolute top-24 right-6 lg:right-10 hidden sm:block">
+          <div className="stamp w-28 h-28 rounded-full bg-accentSoft border border-ink/15 flex items-center justify-center text-center">
+            <div className="font-display text-[10px] tracking-[0.18em] uppercase text-ink leading-tight">
+              Chamberí<br/>· Madrid ·
             </div>
           </div>
+        </div>
 
-          {/* Decoración inferior */}
-          <div className="mt-20 lg:mt-28 grid grid-cols-12 gap-6 items-end">
-            <div className="col-span-12 md:col-span-7 photo-placeholder rounded-[2px] aspect-[4/5] md:aspect-[16/10]" aria-hidden />
-            <div className="col-span-12 md:col-span-5 flex flex-col gap-4">
-              <div className="photo-placeholder rounded-[2px] aspect-[4/5]" aria-hidden />
-            </div>
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 relative">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-px w-12 bg-ink/40" />
+            <span className="eyebrow">Restaurante · desde 2013</span>
+          </div>
+
+          <HeroTitle />
+
+          <p className="mt-8 max-w-xl text-lg leading-relaxed text-inkSoft font-body">
+            Producto de temporada, técnica mediterránea y sabores que viajan. Una mesa para detenerse, brindar y volver.
+          </p>
+
+          <div className="mt-10 flex flex-wrap gap-3">
+            <a href="#carta" className="btn btn-primary bg-accent text-bg px-7 py-3.5 rounded-full font-medium text-sm">
+              Ver carta
+            </a>
+            <a href={`tel:${PHONE}`} className="btn btn-secondary border border-ink/20 text-ink px-7 py-3.5 rounded-full font-medium text-sm">
+              Llamar al restaurante
+            </a>
           </div>
         </div>
       </section>
 
       {/* MANIFIESTO */}
-      <section id="manifiesto" className="relative bg-accentSoft">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-24 lg:py-32 relative">
-          <span className="section-num absolute top-8 lg:top-12 left-6 lg:left-10 text-sm">01 — Manifiesto</span>
-          <div className="flex items-center gap-4 mb-12">
-            <div className="h-px w-10 bg-ink" />
-            <span className="eyebrow">La casa</span>
+      <section id="manifiesto" className="relative py-24 lg:py-32 bg-accentSoft border-t border-line">
+        <div className="absolute top-6 left-6 lg:left-10 section-number text-4xl lg:text-5xl">01 — Manifiesto</div>
+
+        <div className="max-w-4xl mx-auto px-6 lg:px-10 relative">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="h-px flex-1 bg-ink/20" />
+            <span className="eyebrow">Lo que nos mueve</span>
           </div>
 
-          <div className="relative max-w-4xl">
-            <span
-              aria-hidden
-              className="absolute -top-10 -left-4 font-display text-ink/20"
-              style={{ fontSize: '6rem', lineHeight: 1 }}
-            >
-              “
-            </span>
-            <p className="reveal font-display font-400 text-ink leading-[1.15] tracking-tight" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
-              Bacira es una mesa donde el Mediterráneo se cruza con sabores que vienen de lejos. Cocinamos con producto, con tiempo y con memoria — sin prisa por encajar en una sola tradición.
+          <div className="relative">
+            <span className="absolute -top-12 -left-4 font-display italic text-accent/60 select-none pointer-events-none" style={{ fontSize: '6rem', lineHeight: 1 }}>“</span>
+            <p className="relative font-display text-ink leading-[1.15] tracking-tight reveal" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
+              Cocinamos como quien escribe una <em className="text-accent">carta</em>: con la temporada al lado, las manos limpias y el tiempo justo. Sin prisa, sin postureo, con producto que se merece su nombre.
             </p>
+          </div>
+
+          <div className="mt-16 grid sm:grid-cols-3 gap-8">
+            {[
+              { t: 'Producto', d: 'De mercado, de temporada, con trazabilidad y conversación con el productor.' },
+              { t: 'Técnica', d: 'Base mediterránea con guiños a Asia y Latinoamérica. Sin acrobacias innecesarias.' },
+              { t: 'Mesa', d: 'Servicio cercano, vinos vivos, sobremesas que se alargan cuando deben.' }
+            ].map((b, i) => (
+              <div key={i} className="reveal" style={{ transitionDelay: `${i * 50}ms` }}>
+                <div className="font-display font-semibold text-xl mb-2">{b.t}</div>
+                <p className="text-inkSoft leading-relaxed text-[0.95rem]">{b.d}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* CARTA / FILOSOFÍA */}
-      <section id="carta" className="relative bg-surface border-t border-line">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-24 lg:py-32 relative">
-          <span className="section-num absolute top-8 lg:top-12 left-6 lg:left-10 text-sm">02 — Carta</span>
-          <div className="flex items-center gap-4 mb-10">
-            <div className="h-px w-10 bg-ink" />
-            <span className="eyebrow">Cocina</span>
+      {/* CARTA DESTACADA */}
+      <section id="carta" className="relative py-24 lg:py-32 bg-bg">
+        <div className="absolute top-6 left-6 lg:left-10 section-number text-4xl lg:text-5xl">02 — Carta</div>
+
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 relative">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="h-px flex-1 bg-ink/20" />
+            <span className="eyebrow">Una muestra de la casa</span>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             <div className="lg:col-span-5">
-              <h2 className="font-display font-500 leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
-                Una carta que <em className="italic text-accent">viaja</em> con la temporada.
+              <h2 className="font-display font-medium leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
+                Una carta que <em className="text-accent">viaja</em> sin perder el norte.
               </h2>
-              <p className="mt-6 text-inkSoft leading-[1.7] max-w-md">
-                Cambia con el mercado y con lo que el día pide. La carta completa, con sus alérgenos y maridajes, se entrega en mesa.
+              <p className="mt-6 text-inkSoft leading-relaxed max-w-md">
+                Cambia con la temporada y con lo que el mercado nos cuenta cada semana. Si quieres conocer la carta completa del día, escríbenos.
               </p>
-              <a
-                href="tel:+34675811548"
-                className="btn mt-10 inline-flex items-center gap-3 bg-ink text-bg px-7 py-4 rounded-full text-sm uppercase tracking-[0.18em] hover:bg-ink/90"
-              >
-                Reservar mesa
-                <span aria-hidden>→</span>
+              <a href={WA_URL} target="_blank" rel="noopener" className="btn btn-secondary inline-flex mt-8 border border-ink/20 px-6 py-3 rounded-full text-sm font-medium">
+                Pedir carta del día →
               </a>
             </div>
 
             <div className="lg:col-span-7">
-              <ul className="space-y-8">
+              <div className="text-center mb-8 font-display italic text-accent text-2xl">*</div>
+              <ul className="space-y-6">
                 {[
-                  { eyebrow: 'Apertura', title: 'Pequeños bocados', desc: 'Snacks de temporada para abrir el apetito y la conversación.' },
-                  { eyebrow: 'Para empezar', title: 'Entrantes', desc: 'Platos para compartir donde el Mediterráneo se mezcla con técnicas de otras costas.' },
-                  { eyebrow: 'Centro de la mesa', title: 'Principales', desc: 'Pescado y carne de proximidad, cocinados con respeto al producto.' },
-                  { eyebrow: 'Final', title: 'Postres', desc: 'Dulces honestos: fruta, masas, lácteos. Sin artificios.' }
-                ].map((it, i) => (
-                  <li key={i} className="reveal" style={{ transitionDelay: `${i * 50}ms` }}>
-                    <a href="#visitar" className="menu-item block group">
-                      <p className="eyebrow mb-2">{it.eyebrow}</p>
-                      <h3 className="font-display font-500 text-ink" style={{ fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)' }}>
-                        {it.title}
-                      </h3>
-                      <p className="mt-2 text-inkSoft leading-[1.7] max-w-xl">{it.desc}</p>
-                    </a>
+                  'Entrantes de temporada según mercado',
+                  'Pescados y mariscos del día',
+                  'Carnes maduradas a la brasa',
+                  'Arroces y guisos de cuchara',
+                  'Platos de inspiración asiática y latina',
+                  'Postres de la casa'
+                ].map((item, i) => (
+                  <li key={i} className="menu-item reveal flex items-baseline justify-between gap-6 pb-3 border-b border-line" style={{ transitionDelay: `${i * 50}ms` }}>
+                    <span className="font-display text-xl text-ink">{item}</span>
+                    <span className="eyebrow text-inkSoft/60 whitespace-nowrap">Temporada</span>
                   </li>
                 ))}
               </ul>
-              <div className="mt-12 text-center font-display italic text-accent text-2xl" aria-hidden>*</div>
-              <p className="text-center text-xs text-inkSoft uppercase tracking-[0.18em] mt-2">
-                Carta sujeta a temporada
+              <p className="mt-8 text-xs text-inkSoft/80 leading-relaxed">
+                Información de alérgenos disponible bajo petición. Adaptamos platos en la medida de lo posible — pregúntanos.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SOBRE */}
-      <section id="sobre" className="relative">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-24 lg:py-32 relative">
-          <span className="section-num absolute top-8 lg:top-12 left-6 lg:left-10 text-sm">03 — Casa</span>
-          <div className="flex items-center gap-4 mb-12">
-            <div className="h-px w-10 bg-ink" />
-            <span className="eyebrow">Sobre Bacira</span>
+      {/* SOBRE PREVIEW */}
+      <section id="sobre" className="relative py-24 lg:py-32 bg-surface border-t border-line">
+        <div className="absolute top-6 left-6 lg:left-10 section-number text-4xl lg:text-5xl">03 — La casa</div>
+
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 relative">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="h-px flex-1 bg-ink/20" />
+            <span className="eyebrow">Sobre nosotros</span>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             <div className="lg:col-span-6 order-2 lg:order-1">
-              <h2 className="reveal font-display font-500 leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
-                Un barrio, una mesa, una manera de <em className="italic text-accent">entender</em> la cocina.
+              <h2 className="font-display font-medium leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
+                Un barrio, una <em className="text-accent">cocina abierta</em>, una idea clara.
               </h2>
-              <div className="reveal mt-8 space-y-5 text-inkSoft leading-[1.7] max-w-xl">
+              <div className="mt-8 space-y-5 text-inkSoft leading-relaxed max-w-prose">
                 <p>
-                  Bacira nació en Chamberí con la idea de que la fusión no es un truco, sino una forma de mirar. Cogemos lo mejor del Mediterráneo y lo dejamos conversar con técnicas y sabores de otros lugares.
+                  Bacira nació en Chamberí con la intención de ofrecer una cocina honesta donde el Mediterráneo y otros caminos se cruzan en el plato. Aquí no hay reglas estrictas: hay producto, manos buenas y respeto por lo que llega cada mañana.
                 </p>
                 <p>
-                  Nos importa el producto, el ritmo del servicio y que cada plato tenga una razón para estar en la carta.
+                  Servimos a quien viene a comer bien, sin pretensiones. Y volvemos a abrir cada día con la misma intención.
                 </p>
-              </div>
-
-              <div className="reveal mt-10 grid grid-cols-3 gap-6 max-w-md">
-                {[
-                  { k: 'Producto', v: 'De temporada' },
-                  { k: 'Técnica', v: 'Mediterránea' },
-                  { k: 'Espíritu', v: 'De fusión' }
-                ].map((s, i) => (
-                  <div key={i} className="border-t border-line pt-4">
-                    <p className="eyebrow mb-2">{s.k}</p>
-                    <p className="font-display text-ink">{s.v}</p>
-                  </div>
-                ))}
               </div>
             </div>
 
-            <div className="lg:col-span-6 order-1 lg:order-2 grid grid-cols-2 gap-4">
-              <div className="photo-placeholder aspect-[3/4] rounded-[2px] lift" aria-hidden />
-              <div className="photo-placeholder aspect-[3/4] rounded-[2px] mt-12 lift" aria-hidden />
+            <div className="lg:col-span-6 order-1 lg:order-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="photo-placeholder aspect-[4/5] rounded-xl border border-line card-lift" />
+                <div className="photo-placeholder aspect-[4/5] rounded-xl border border-line card-lift mt-8" />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* VISITAR */}
-      <section id="visitar" className="relative bg-surface border-t border-line">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-24 lg:py-32 relative">
-          <span className="section-num absolute top-8 lg:top-12 left-6 lg:left-10 text-sm">04 — Visitar</span>
-          <div className="flex items-center gap-4 mb-12">
-            <div className="h-px w-10 bg-ink" />
-            <span className="eyebrow">Reservar y encontrarnos</span>
+      {/* VISITARNOS */}
+      <section id="visitarnos" className="relative py-24 lg:py-32 bg-bg">
+        <div className="absolute top-6 left-6 lg:left-10 section-number text-4xl lg:text-5xl">04 — Visitarnos</div>
+
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 relative">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="h-px flex-1 bg-ink/20" />
+            <span className="eyebrow">Ubicación y horarios</span>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-7">
-              <h2 className="font-display font-500 leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(1.875rem, 4.5vw, 3.25rem)' }}>
-                Mesa para <em className="italic text-accent">esta noche</em>.
-              </h2>
-              <p className="mt-6 text-inkSoft leading-[1.7] max-w-lg">
-                Recomendamos reservar con antelación. Para grupos, eventos o consultas especiales, escríbenos o llámanos directamente.
-              </p>
-
-              <div className="mt-10 flex flex-wrap gap-4">
-                <a href="tel:+34675811548" className="btn inline-flex items-center gap-3 bg-accent text-bg px-7 py-4 rounded-full text-sm uppercase tracking-[0.18em] hover:bg-accent/90">
-                  Llamar · 675 811 548
-                </a>
+          <div className="grid lg:grid-cols-12 gap-10">
+            <div className="lg:col-span-5 space-y-8">
+              <div className="reveal">
+                <div className="eyebrow mb-3">Dónde estamos</div>
+                <p className="font-display text-2xl leading-snug">Chamberí, Madrid</p>
                 <a
-                  href="https://wa.me/34675811548"
+                  href={MAPS_LINK}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn inline-flex items-center gap-3 px-7 py-4 rounded-full text-sm uppercase tracking-[0.18em] border border-ink text-ink hover:bg-ink hover:text-bg"
+                  rel="noopener"
+                  className="btn btn-secondary inline-flex mt-4 border border-ink/20 px-5 py-2.5 rounded-full text-sm font-medium"
                 >
-                  WhatsApp
+                  Cómo llegar →
                 </a>
+              </div>
+
+              <div className="reveal" style={{ transitionDelay: '60ms' }}>
+                <div className="eyebrow mb-3">Contacto</div>
+                <div className="space-y-2 font-display text-xl">
+                  <a href={`tel:${PHONE}`} className="nav-link block">{PHONE_DISPLAY}</a>
+                  <a href={WA_URL} target="_blank" rel="noopener" className="nav-link block text-accent">WhatsApp</a>
+                </div>
+                <p className="mt-3 text-sm text-inkSoft">Email: pendiente de confirmar.</p>
+              </div>
+
+              <div className="reveal" style={{ transitionDelay: '120ms' }}>
+                <div className="eyebrow mb-3">Horarios</div>
+                <p className="text-inkSoft text-sm leading-relaxed">
+                  Para conocer los horarios actualizados, escríbenos por WhatsApp o llámanos. Atendemos comidas y cenas.
+                </p>
               </div>
             </div>
 
-            <div className="lg:col-span-5 space-y-8">
-              <div className="border-t border-line pt-6">
-                <p className="eyebrow mb-3">Dónde</p>
-                <p className="font-display text-xl text-ink">Chamberí, Madrid</p>
-                <p className="text-sm text-inkSoft mt-1">[DIR_PENDIENTE]</p>
-              </div>
-              <div className="border-t border-line pt-6">
-                <p className="eyebrow mb-3">Contacto</p>
-                <p className="font-display text-xl text-ink">+34 675 811 548</p>
-                <p className="text-sm text-inkSoft mt-1">[EMAIL_PENDIENTE]</p>
-              </div>
-              <div className="border-t border-line pt-6">
-                <p className="eyebrow mb-3">Horario</p>
-                <p className="text-sm text-inkSoft">Consulta horarios actualizados al reservar.</p>
+            <div className="lg:col-span-7">
+              <div className="reveal rounded-2xl overflow-hidden border border-line">
+                <iframe
+                  src={MAPS_EMBED}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-[420px]"
+                  title="Ubicación de Bacira en Chamberí, Madrid"
+                />
               </div>
             </div>
           </div>
@@ -270,34 +290,38 @@ export default function Page() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-ink text-bg">
-        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-16 lg:py-20">
-          <div className="grid md:grid-cols-12 gap-10 items-end">
-            <div className="md:col-span-7">
-              <p className="eyebrow text-bg/60">Bacira · Chamberí, Madrid</p>
-              <p className="mt-4 font-display font-400 leading-[1.05] tracking-tight" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
-                Una mesa para <em className="italic text-accentSoft">detenerse</em>, brindar y volver.
+      <footer className="bg-ink text-bg/80 py-16">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
+          <div className="grid md:grid-cols-3 gap-10 mb-12">
+            <div>
+              <div className="font-display text-3xl text-bg font-medium">
+                Bacira<span className="text-accentSoft">.</span>
+              </div>
+              <p className="mt-3 text-sm text-bg/60 max-w-xs leading-relaxed">
+                Cocina de fusión en Chamberí. Producto, técnica y mesa.
               </p>
             </div>
-            <div className="md:col-span-5 grid grid-cols-2 gap-6 text-sm">
-              <div>
-                <p className="text-bg/50 uppercase tracking-[0.18em] text-xs mb-3">Reservas</p>
-                <a href="tel:+34675811548" className="block hover:text-accentSoft transition-colors">+34 675 811 548</a>
-                <a href="https://wa.me/34675811548" className="block hover:text-accentSoft transition-colors mt-1">WhatsApp</a>
-              </div>
-              <div>
-                <p className="text-bg/50 uppercase tracking-[0.18em] text-xs mb-3">Sitio</p>
-                <a href="#manifiesto" className="block hover:text-accentSoft transition-colors">Casa</a>
-                <a href="#carta" className="block hover:text-accentSoft transition-colors mt-1">Carta</a>
-                <a href="#sobre" className="block hover:text-accentSoft transition-colors mt-1">Sobre</a>
-                <a href="#visitar" className="block hover:text-accentSoft transition-colors mt-1">Visitar</a>
-              </div>
+            <div>
+              <div className="eyebrow text-bg/50 mb-4">Contacto</div>
+              <ul className="space-y-2 text-sm">
+                <li><a href={`tel:${PHONE}`} className="hover:text-bg">{PHONE_DISPLAY}</a></li>
+                <li><a href={WA_URL} target="_blank" rel="noopener" className="hover:text-bg">WhatsApp</a></li>
+                <li><a href={MAPS_LINK} target="_blank" rel="noopener" className="hover:text-bg">Chamberí, Madrid</a></li>
+              </ul>
+            </div>
+            <div>
+              <div className="eyebrow text-bg/50 mb-4">Secciones</div>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#manifiesto" className="hover:text-bg">Manifiesto</a></li>
+                <li><a href="#carta" className="hover:text-bg">Carta</a></li>
+                <li><a href="#sobre" className="hover:text-bg">La casa</a></li>
+                <li><a href="#visitarnos" className="hover:text-bg">Visitarnos</a></li>
+              </ul>
             </div>
           </div>
-
-          <div className="mt-16 pt-6 border-t border-bg/10 flex flex-wrap items-center justify-between gap-4 text-xs text-bg/50">
-            <p>© {new Date().getFullYear()} Bacira. Todos los derechos reservados.</p>
-            <p className="font-display italic">Hecho en Madrid</p>
+          <div className="pt-8 border-t border-bg/10 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-xs text-bg/50">
+            <div>© {new Date().getFullYear()} Bacira · Todos los derechos reservados</div>
+            <div className="font-display italic">Chamberí · Madrid</div>
           </div>
         </div>
       </footer>
