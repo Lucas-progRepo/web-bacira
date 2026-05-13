@@ -13,11 +13,11 @@ module.exports = {
         line: 'rgba(28,26,22,0.12)'
       },
       fontFamily: {
-        display: ['var(--font-fraunces)', 'Georgia', 'serif'],
-        body: ['var(--font-manrope)', 'system-ui', 'sans-serif']
+        display: ['var(--font-fraunces)', 'serif'],
+        body: ['var(--font-manrope)', 'sans-serif']
       },
       transitionTimingFunction: {
-        'out-strong': 'cubic-bezier(0.23, 1, 0.32, 1)'
+        editorial: 'cubic-bezier(0.23, 1, 0.32, 1)'
       }
     }
   },
